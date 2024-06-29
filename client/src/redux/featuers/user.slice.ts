@@ -1,4 +1,4 @@
-import { loginUser, signupUser } from '@/api/auth.api';
+import { getAuthStatus, loginUser, signupUser } from '@/api/auth.api';
 import { uploadUserPfp } from '@/api/user.api';
 import { TUser } from '@/types/user';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
@@ -27,6 +27,10 @@ export const uploadPfp = createAsyncThunk("user/upload/pfp", async(pfp: File)=>{
     return res;
 })
 
+export const getStatus = createAsyncThunk("user/auth/status", async()=>{
+    return await getAuthStatus();
+})
+
 const userSlice = createSlice({
     name: "user",
     initialState,
@@ -34,7 +38,8 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         //login
         builder.addCase(login.pending, (state)=>{
-            state.is_loading = true
+            state.is_loading = true;
+            state.error = false;
         });
         builder.addCase(login.fulfilled, (state, action)=>{
             state.is_loading = false
@@ -60,6 +65,7 @@ const userSlice = createSlice({
         })
         builder.addCase(signup.pending, (state)=>{
             state.is_loading = true;
+            state.error = false;
         })
         builder.addCase(signup.rejected, (state, action)=>{
             state.is_loading = false;
@@ -69,6 +75,7 @@ const userSlice = createSlice({
         //upload pfp
         builder.addCase(uploadPfp.pending, (state)=>{
             state.is_loading = true;
+            state.error = false;
         })
         builder.addCase(uploadPfp.fulfilled, (state, action)=>{
             state.is_loading = false;
@@ -79,6 +86,24 @@ const userSlice = createSlice({
             state.message = res.message;
         })
         builder.addCase(uploadPfp.rejected, (state)=>{
+            state.is_loading = false;
+            state.error = true;
+            state.message = "Network request Error"
+        })
+        //auth status
+        builder.addCase(getStatus.pending, (state)=>{
+            state.is_loading = true;
+            state.error = false;
+        });
+        builder.addCase(getStatus.fulfilled, (state, action)=>{
+            state.is_loading = false;
+            const res = action.payload
+            state.message = res.message;
+            state.error = res.error;
+            state.data = res.result
+        })
+
+        builder.addCase(getStatus.rejected, (state)=>{
             state.is_loading = false;
             state.error = true;
             state.message = "Network request Error"

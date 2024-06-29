@@ -3,10 +3,10 @@ import CustomButton from "@/components/Buttons/Button.component";
 import AuthFooter from "@/components/Auth/Footer.component";
 import AuthHeader from "@/components/Auth/Header.component";
 import AuthInput from "@/components/Input/AuthInput.component";
-import { useEffect, useState } from "react";
-import { login, signup } from "@/redux/featuers/user.slice";
+import { useState } from "react";
+import { login } from "@/redux/featuers/user.slice";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { TLoginRequest, TSignupRequest } from "@shared/api/authApi.type";
+import { TLoginRequest } from "@shared/api/authApi.type";
 import { useSelector, useDispatch } from "react-redux";
 import { toastError } from "@/utils/toast.utils";
 
