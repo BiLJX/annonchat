@@ -9,3 +9,7 @@
 input:active, input:focus {
   outline: none;
 }
+
+/* .Toastify__toast-icon {
+  display: inline !important;
+} */

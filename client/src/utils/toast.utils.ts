@@ -1,13 +1,13 @@
 import { toast } from "react-toastify"
 
-export const toastError = (msg: string) => {
+export const toastError = (msg: string = "Error") => {
     toast.error(msg, {
         hideProgressBar: true,
         theme: "colored",
     })
 }
 
-export const toastSuccess = (msg: string) => {
+export const toastSuccess = (msg: string = "Successs") => {
     toast.success(msg, {
         hideProgressBar: true,
         theme: "colored"

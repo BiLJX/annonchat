@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import CustomButton from "@/components/Buttons/Button.component";
 import AuthFooter from "@/components/Auth/Footer.component";
 import AuthHeader from "@/components/Auth/Header.component";
@@ -8,9 +8,11 @@ import { login, signup } from "@/redux/featuers/user.slice";
 import { AppDispatch, RootState } from "@/redux/store.redux";
 import { TLoginRequest, TSignupRequest } from "@shared/api/authApi.type";
 import { useSelector, useDispatch } from "react-redux";
+import { toastError } from "@/utils/toast.utils";
 
 export default function LoginPage(){
-    const {data: user, error, is_loading, message} = useSelector((state: RootState)=>state.user);
+    const {is_loading} = useSelector((state: RootState)=>state.user);
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [data, setData] = useState<TLoginRequest>({
         password: "",
@@ -18,13 +20,15 @@ export default function LoginPage(){
     })
     const handleSubmit = (e: any)=>{
         e.preventDefault();
-        dispatch(login(data));
+        dispatch(login(data))
+        .unwrap()
+        .then((payload)=>{
+            if(payload.error) return toastError(payload.message)
+            navigate("/")
+        });
     }
-    useEffect(()=>{
-       
-    }, [user])
     return(
-        <div className="p-lg w-screen h-screen flex flex-col pb-8">
+        <div className="p-md w-screen h-screen flex flex-col pb-8">
            <AuthHeader />
             <form className="flex flex-col space-y-8" onSubmit={handleSubmit}>
                 <div className="text-c_gray-800 font-medium text-lg">Login to your account</div>

@@ -19,10 +19,6 @@ const schema = new Schema<TUser>({
         required: true,
         unique: true
     },
-    account_setup: {
-        type: Boolean,
-        default: false
-    },
     bio: {
         type: String,
         default: ""

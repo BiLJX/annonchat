@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import CustomButton from "@/components/Buttons/Button.component";
 import AuthInput from "@/components/Input/AuthInput.component";
 import AuthHeader from "@/components/Auth/Header.component";
@@ -8,9 +8,11 @@ import { AppDispatch, RootState } from "@/redux/store.redux";
 import { useEffect, useState } from "react";
 import { TSignupRequest } from "@shared/api/authApi.type";
 import { signup } from "@/redux/featuers/user.slice";
+import { toastError } from "@/utils/toast.utils";
 
 export default function SignupPage(){
-    const {data: user, error, is_loading, message} = useSelector((state: RootState)=>state.user);
+    const {is_loading} = useSelector((state: RootState)=>state.user);
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [data, setData] = useState<TSignupRequest>({
         bio: "",
@@ -20,13 +22,13 @@ export default function SignupPage(){
     })
     const handleSubmit = (e: any)=>{
         e.preventDefault();
-        dispatch(signup(data));
+        dispatch(signup(data)).unwrap().then((data)=>{
+            if(data.error) return toastError(data.message)
+            navigate("/upload/pfp")
+        });
     }
-    useEffect(()=>{
-        console.log(user);
-    }, [user])
     return(
-        <div className="p-lg w-screen h-screen flex flex-col pb-8">
+        <div className="p-md w-screen h-screen flex flex-col pb-8">
             <AuthHeader />
             <form className="flex flex-col space-y-8" onSubmit={handleSubmit}>
                 <div className="text-c_gray-800 font-medium text-lg">Create your account</div>

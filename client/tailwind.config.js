@@ -8,10 +8,10 @@ export default {
     extend: {
       spacing: {
         xs: "16px",
-        sm: "20px",
-        md: "24px",
-        lg: "30px",
-        xl: "40px"
+        sm: "24px",
+        md: "32px",
+        lg: "40px",
+        xl: "48px"
       },
       colors: {
         c_blue: {

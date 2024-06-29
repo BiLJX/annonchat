@@ -3,19 +3,19 @@ import { Response } from "express";
 export default class JsonResponse {
     constructor(private res: Response){}
     
-    public success(data: any = {}, message: string = "success"){
+    public success(result: any = {}, message: string = "success"){
         this.res.status(200).json({
             error: false,
             status: 200,
-            data,
+            result,
             message
         })
     }
-    public serverError(message: string = "Internal Server Error", data: any = null){
+    public serverError(message: string = "Internal Server Error", result: any = null){
         this.res.status(200).json({
             error: true,
             status: 500,
-            data,
+            result,
             message
         })
     }
@@ -23,7 +23,7 @@ export default class JsonResponse {
         this.res.status(200).json({
             error: true,
             status: 404,
-            data: null,
+            result: null,
             message
         })
     }
@@ -31,15 +31,15 @@ export default class JsonResponse {
         this.res.status(200).json({
             error: true,
             status: 401,
-            data: null,
+            result: null,
             message
         })
     }
-    public clientError(message: string, data: any = null){
+    public clientError(message: string, result: any = null){
         this.res.status(200).json({
             error: true,
             status: 400,
-            data,
+            result,
             message
         })
     }
