@@ -1,1 +1,1 @@
-export const STORAGE_NAME = "annonchat"
+export const STORAGE_NAME = "annonchat";

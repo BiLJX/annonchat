@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "@/redux/store.redux"
 import useAuth from "@/hooks/auth.hook"
 import { getStatus } from "@/redux/featuers/user.slice"
+import RandomPage from "@/pages/Random/random.page"
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
     return (
         <Routes>
             <Route element = {<ProtectedRouter />}>
-                <Route path="/" element={<>Hey</>} />
+                <Route path="/" element={<RandomPage />} />
             </Route>
             <Route path = "/signup" element = {<SignupPage />} />
             <Route path = "/login" element = {<LoginPage />} />

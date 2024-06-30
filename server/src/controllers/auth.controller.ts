@@ -85,7 +85,6 @@ export const authenticateUser: Controller = async(req, res, next) => {
         const token = req.cookies.session;
         if(!token) return jsonResponse.notAuthorized();
         const { user_id } = jwt.verify(token, process.env.USER_SESSION_JWT||"") as any;
-        console.log(jwt.verify(token, process.env.USER_SESSION_JWT||"") as any)
         if(!user_id) return jsonResponse.notAuthorized();
         const user = await User.findOne({user_id}).select("-password -email");
         if(!user) return jsonResponse.clientError("User not found");

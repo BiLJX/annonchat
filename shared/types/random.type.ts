@@ -1,0 +1,1 @@
+export type RandomChatTypes = "individual"|"group";
