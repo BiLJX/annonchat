@@ -6,31 +6,42 @@ import ProtectedRouter from "./ProtectedRouter"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "@/redux/store.redux"
-import useAuth from "@/hooks/auth.hook"
 import { getStatus } from "@/redux/featuers/user.slice"
 import RandomPage from "@/pages/Random/random.page"
-
+import { toastError } from "@/utils/toast.utils"
+import SocketContextProvider from "@/Contexts/socket.context"
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch<AppDispatch>();
+    const [failed, setFailed] = useState(false);
     const fetchStatus = async() => {
-        await dispatch(getStatus());
-        setIsLoading(false)
+        try{
+            await dispatch(getStatus()).unwrap();
+            setIsLoading(false);
+        }catch(err){
+            console.log(err);
+            toastError("Something Went Wrong");
+            setFailed(true)
+        }
     }
     useEffect(()=>{
         fetchStatus()
     }, [dispatch])
+    if(failed) return <>Error while connecting to server</>
     if(isLoading) return <>Loading...</>
     return (
-        <Routes>
-            <Route element = {<ProtectedRouter />}>
-                <Route path="/" element={<RandomPage />} />
-            </Route>
-            <Route path = "/signup" element = {<SignupPage />} />
-            <Route path = "/login" element = {<LoginPage />} />
-            <Route path = "/upload/pfp" element = {<PfpUploadPage />} />
-        </Routes>
+        <SocketContextProvider>
+            <Routes>
+                <Route element = {<ProtectedRouter />}>
+                    <Route path="/" element={<RandomPage />} />
+                </Route>
+                <Route path = "/signup" element = {<SignupPage />} />
+                <Route path = "/login" element = {<LoginPage />} />
+                <Route path = "/upload/pfp" element = {<PfpUploadPage />} />
+            </Routes>
+        </SocketContextProvider>
+        
     )
 }
 

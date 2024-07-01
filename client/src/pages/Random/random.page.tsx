@@ -5,12 +5,35 @@ import GroupImage from "@/assets/groupils.jpg";
 import IndieImage from "@/assets/individualils.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { changeType } from "@/redux/featuers/random.slice";
+import { cancelFind, changeType, findMatch } from "@/redux/featuers/random.slice";
+import { useSocket } from "@/Contexts/socket.context";
+import { SocketEvents } from "@shared/sockets/socketEvents.type"
+import { useEffect } from "react";
 const GROUP_TEXT = "Group mode allows you to find random matches of 5 people. You can also add members of the group as friend";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find a random match. You can also add the match as friend";
 export default function RandomPage(){
     const {status, type} = useSelector((state: RootState)=>state.randomChat);
-    const dispatch = useDispatch<AppDispatch>()
+    const dispatch = useDispatch<AppDispatch>();
+    const socket = useSocket();
+    const onFind = () => {
+        if(!socket) return;
+        dispatch(findMatch());
+        socket.emit(SocketEvents.MATCH_FIND, {type});
+    }
+    const handleFound = (data: any) => {
+        console.log(data);
+    }
+    const handleCancel = (data: any) => {
+        socket?.emit(SocketEvents.MATCH_CANCEL)
+        dispatch(cancelFind());
+    }
+    useEffect(()=>{
+        if(!socket) return;
+        socket.on(SocketEvents.MATCH_FOUND, handleFound)
+        return(()=>{
+            socket.off(SocketEvents.MATCH_FOUND, handleFound)
+        })
+    }, [socket])
     return(
         <>
             <Header>
@@ -31,7 +54,7 @@ export default function RandomPage(){
                     <p className="text-c_gray-700 text-sm font-medium">
                         {type === "group"?GROUP_TEXT:INDIVIDUAL_TEXT}
                     </p>
-                    <CustomButton className="w-full">Find</CustomButton>
+                    {status === "idle"?<CustomButton className="w-full" onClick={onFind}>Find</CustomButton>:<CustomButton onClick={handleCancel} className="w-full">Cancel</CustomButton>}
                 </div>
                
                 
