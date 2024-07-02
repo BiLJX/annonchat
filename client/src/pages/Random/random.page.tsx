@@ -9,6 +9,7 @@ import { cancelFind, changeType, findMatch } from "@/redux/featuers/random.slice
 import { useSocket } from "@/Contexts/socket.context";
 import { SocketEvents } from "@shared/sockets/socketEvents.type"
 import { useEffect } from "react";
+import FindingMatchPage from "./finding.page";
 const GROUP_TEXT = "Group mode allows you to find random matches of 5 people. You can also add members of the group as friend";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find a random match. You can also add the match as friend";
 export default function RandomPage(){
@@ -23,10 +24,7 @@ export default function RandomPage(){
     const handleFound = (data: any) => {
         console.log(data);
     }
-    const handleCancel = (data: any) => {
-        socket?.emit(SocketEvents.MATCH_CANCEL)
-        dispatch(cancelFind());
-    }
+
     useEffect(()=>{
         if(!socket) return;
         socket.on(SocketEvents.MATCH_FOUND, handleFound)
@@ -34,6 +32,11 @@ export default function RandomPage(){
             socket.off(SocketEvents.MATCH_FOUND, handleFound)
         })
     }, [socket])
+    if(status === "finding"){
+        return(
+            <FindingMatchPage />
+        )
+    }
     return(
         <>
             <Header>
@@ -54,7 +57,7 @@ export default function RandomPage(){
                     <p className="text-c_gray-700 text-sm font-medium">
                         {type === "group"?GROUP_TEXT:INDIVIDUAL_TEXT}
                     </p>
-                    {status === "idle"?<CustomButton className="w-full" onClick={onFind}>Find</CustomButton>:<CustomButton onClick={handleCancel} className="w-full">Cancel</CustomButton>}
+                    <CustomButton className="w-full" onClick={onFind}>Find</CustomButton>
                 </div>
                
                 

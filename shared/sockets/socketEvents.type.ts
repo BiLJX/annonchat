@@ -1,5 +1,5 @@
 import { RandomChatTypes } from "@shared/types/random.type"
-import { TUser } from "types/models/user.type"
+import { TUser } from "@shared/types/user.type"
 export enum SocketEvents {
     CONNECT = 'connect',
     DISCONNECT = 'disconnect',
@@ -27,5 +27,10 @@ export interface TSocketResponseData<T>{
 
 export interface TIndieMatchFound {
     user: TUser[],
+    room_id: string
+}
+
+export interface TMatchFound {
+    users: TUser[],
     room_id: string
 }
