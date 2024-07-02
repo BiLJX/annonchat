@@ -14,6 +14,7 @@ export interface TSignupResponse {
     bio: string,
 }
 
+
 export interface TLoginRequest {
     username: string,
     password: string

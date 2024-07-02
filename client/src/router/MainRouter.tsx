@@ -10,6 +10,7 @@ import { getStatus } from "@/redux/featuers/user.slice"
 import RandomPage from "@/pages/Random/random.page"
 import { toastError } from "@/utils/toast.utils"
 import SocketContextProvider from "@/Contexts/socket.context"
+import ChatPage from "@/pages/Chat/chat.page"
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -35,6 +36,7 @@ function App() {
             <Routes>
                 <Route element = {<ProtectedRouter />}>
                     <Route path="/" element={<RandomPage />} />
+                    <Route path = "/chat/:id" element={<ChatPage />} />
                 </Route>
                 <Route path = "/signup" element = {<SignupPage />} />
                 <Route path = "/login" element = {<LoginPage />} />
