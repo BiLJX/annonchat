@@ -7,7 +7,7 @@ interface MainProps {
     message_id: string,
     text: string,
     time: Date,
-    sender_id: string,
+    author_id: string,
     isMine?: boolean,
     isLast?: boolean,
     isFirst?: boolean,
@@ -49,14 +49,9 @@ export default function ChatBubble(props: GroupChatProps | SingleChatProps) {
                         "px-4 py-2 bg-c_gray-200 rounded-3xl text-c_gray-700 flex space-x-4",
                         {
                             "bg-c_blue-900": props.isMine,
-
                             "rounded-br-[0]":  props.isFirst,
                             "rounded-tr-[0]": props.isLast,
                             "rounded-r-[0]": !props.isLast && !props.isFirst,
-
-                            // "rounded-bl-[0]": props.isMine && props.isFirst,
-                            // "rounded-tl-[0]": props.isMine && props.isLast,
-                            // "rounded-l-[0]": props.isMine && !props.isLast && !props.isFirst,
                         }
                     )
                 }>

@@ -4,21 +4,25 @@ import { redis } from "lib/redis";
 import { User } from "models/User.model";
 import { Server, Socket } from "socket.io";
 
-enum MatchKeys {
+export enum MatchKeys {
     INDVIDUAL_QUE = "matchmakingIndieQue",
     GROUP_QUE = "matchmakingGroupQue",
     INDIVIDAL_ROOM = "indieRoom:",
     ROOM_MAP = "roomMap:",
     LOCK_USER = "lock",
+    ROOM = "room",
 }
 
 
 
 const leaveRoom = async(user_id: string, room_id: string) => {
-    const key = MatchKeys.INDVIDUAL_QUE + room_id;
+    //roomkey
+    const key = MatchKeys.ROOM + room_id;
+    const map_key = MatchKeys.ROOM_MAP+user_id
     const is_member = await redis.sIsMember(key, user_id);
     if(!is_member) return;
     await redis.sRem(key, user_id);
+    await redis.del(map_key);
     const members = await redis.sMembers(key);
     if(members.length === 0){
         await redis.del(key);
@@ -26,7 +30,7 @@ const leaveRoom = async(user_id: string, room_id: string) => {
 }
 
 const joinRoom = async(members: string[], room_id: string) => {
-    const key = MatchKeys.INDVIDUAL_QUE + room_id;
+    const key = MatchKeys.ROOM + room_id;
     await redis.sAdd(key, members);
     for(let member_id of members){
         await redis.set(MatchKeys.ROOM_MAP+member_id, room_id);

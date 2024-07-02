@@ -11,6 +11,10 @@ export enum SocketEvents {
     NOTIFICATION = 'notification'
 }
 
+export enum SocketChatEvents {
+    MESSAGE_SEND = "message send"
+}
+
 export interface TSocketRequest<T>{
     payload: T
 }
@@ -34,3 +38,19 @@ export interface TMatchFound {
     users: TUser[],
     room_id: string
 }
+
+interface TMessageSendRequestMain {
+    room_id: string, 
+    message: string, 
+}
+
+interface TMessageSendRequestRandom extends TMessageSendRequestMain {
+    is_random_room: true
+    room_type: "individual"|"group"
+}
+
+interface TMessageSendRequestDM extends TMessageSendRequestMain {
+    is_random_room: false
+}
+
+export type TMessageSendRequest = TMessageSendRequestRandom | TMessageSendRequestDM;

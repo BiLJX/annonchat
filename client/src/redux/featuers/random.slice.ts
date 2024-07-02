@@ -1,12 +1,15 @@
 import { TUser } from "@/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RandomChatTypes } from "@shared/types/random.type";
+
+
 interface MainState {
     type: RandomChatTypes,
     status: "idle"|"finding"|"found",
-    match: TUser[],
+    match: TUser|TUser[]|null,
     room_id: string|null
 }
+
 
 
 const initialState: MainState = {
@@ -21,22 +24,30 @@ const randomChatSlice = createSlice({
     initialState,
     reducers: {
         changeType: (state, action: PayloadAction<RandomChatTypes>) => {
-            state.match = [];
             state.type = action.payload;
+            state.match = []
         },
         findMatch: (state) => {
-            if(state.status === "idle") state.status = "finding";
+            if(state.status === "idle") {
+                state.match = [];
+                state.status = "finding";
+            }
         },
         cancelMatch: (state) => {
-            if(state.status === "found") state.status = "idle";
+            if(state.status === "found") {
+                state.match = [];
+                state.status = "idle";
+            }
         },
         setMatch: (state, action: PayloadAction<{user: TUser[], room_id: string}>) => {
+            state.match = [];
             state.status = "found";
-            state.match = action.payload.user;
+            state.match = action.payload.user
             state.room_id = action.payload.room_id
         },
         cancelFind: (state) => {
             if(state.status === "finding"){
+                state.match = [];
                 state.status = "idle"
             }
         }
