@@ -1,5 +1,5 @@
 import CustomButton from "@/components/Buttons/Button.component";
-import { ContainerForHeader } from "@/components/Container/Container.component";
+import { HeaderContentWrapper } from "@/components/Container/Container.component";
 import Header, { HeaderHeading } from "@/components/Header/Header.component";
 import GroupImage from "@/assets/groupils.jpg";
 import IndieImage from "@/assets/individualils.webp";
@@ -44,7 +44,7 @@ export default function RandomPage(){
                     <HeaderHeading className="text-center">Random Match</HeaderHeading>
                 </div>
             </Header>
-            <ContainerForHeader className="p-sm space-y-2">
+            <HeaderContentWrapper className="p-sm space-y-2">
                 <div className="flex">
                     <CustomButton colorVariant={type === "group"?"secondary":"transparent"} className="flex-1" onClick={()=>dispatch(changeType("group"))}>Group</CustomButton>
                     <CustomButton colorVariant={type === "individual"?"secondary":"transparent"} className="flex-1" onClick={()=>dispatch(changeType("individual"))}>Individual</CustomButton>
@@ -61,7 +61,7 @@ export default function RandomPage(){
                 </div>
                
                 
-            </ContainerForHeader>
+            </HeaderContentWrapper>
         </>
     )
 }

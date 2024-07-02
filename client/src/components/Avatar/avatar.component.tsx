@@ -14,8 +14,13 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
 
     return (
-        <div className={cn(`flex rounded-full overflow-hidden`)} style={{width: size + "px", height: size + "px"}}>
-            <img src={src} alt={alt} className="w-full h-full object-cover" />
+        <div className={cn(`flex rounded-full overflow-hidden`)} style={{
+            width: size + "px", 
+            height: size + "px",
+            maxWidth: size + "px",
+            maxHeight: size + "px"
+        }}>
+            <img src={src} alt={alt} className="w-[inherit] h-[inherit] object-cover" />
         </div>
     );
 }
