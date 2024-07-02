@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken";
 import { SocketEvents } from "@shared/sockets/socketEvents.type"
 import { matchHandler } from "handlers/match.handler";
 import { redis } from "lib/redis";
+import { chatHandler } from "handlers/chat.handler";
 
 
 const PORT = process.env.PORT || 4000;
@@ -68,6 +69,7 @@ async function main(){
     io.on(SocketEvents.CONNECT, socket=>{
         socket.join(socket.user_id);
         matchHandler(io, socket);
+        chatHandler(io, socket);
     })
 }
 

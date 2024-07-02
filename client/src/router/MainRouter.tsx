@@ -36,7 +36,7 @@ function App() {
             <Routes>
                 <Route element = {<ProtectedRouter />}>
                     <Route path="/" element={<RandomPage />} />
-                    <Route path = "/chat/:id" element={<ChatPage />} />
+                    {/* <Route path = "/chat/individual" element={<ChatPage />} /> */}
                 </Route>
                 <Route path = "/signup" element = {<SignupPage />} />
                 <Route path = "/login" element = {<LoginPage />} />

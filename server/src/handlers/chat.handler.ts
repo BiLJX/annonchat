@@ -8,10 +8,13 @@ import { SocketChatEvents, SocketEvents, TMessageSendRequest } from "@shared/soc
 export const chatHandler = async (io: Server, socket: Socket) => {
     const user_id = socket.user_id;
     const onMessage = async ({room_id, message}: TMessageSendRequest) => {
+        console.log("\n\n\nMessage: "+message+" room_id:"+room_id)
         const room_key = MatchKeys.ROOM + room_id;
         const is_member = await redis.sIsMember(room_key, user_id);
+        console.log("----\nIs Member: "+is_member);
         if(!is_member) return;
         const members = await redis.sMembers(room_key);
+        console.log("----\nMembers: "+members);
         const author_data = (await User.aggregate([
             {
                 $match: {user_id}
@@ -31,7 +34,9 @@ export const chatHandler = async (io: Server, socket: Socket) => {
             message,
             seen_by: [],
             message_id: makeId(),
+            sent_on: new Date()
         }
+        console.log("----\n Message Data: "+messageData);
         members.forEach(member_id=>{
             if(member_id === user_id) return;
             io.to(member_id).emit(SocketChatEvents.MESSAGE_SEND, messageData);

@@ -5,11 +5,13 @@ import GroupImage from "@/assets/groupils.jpg";
 import IndieImage from "@/assets/individualils.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { cancelFind, changeType, findMatch } from "@/redux/featuers/random.slice";
+import { cancelFind, changeType, findMatch, setMatch } from "@/redux/featuers/random.slice";
 import { useSocket } from "@/Contexts/socket.context";
 import { SocketEvents } from "@shared/sockets/socketEvents.type"
 import { useEffect } from "react";
 import FindingMatchPage from "./finding.page";
+import ChatPage from "../Chat/chat.page";
+import { TUser } from "@/types/user";
 const GROUP_TEXT = "Group mode allows you to find random matches of 5 people. You can also add members of the group as friend";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find a random match. You can also add the match as friend";
 export default function RandomPage(){
@@ -21,8 +23,8 @@ export default function RandomPage(){
         dispatch(findMatch());
         socket.emit(SocketEvents.MATCH_FIND, {type});
     }
-    const handleFound = (data: any) => {
-        console.log(data);
+    const handleFound = (data: {user: TUser[], room_id: string}) => {
+        dispatch(setMatch(data));
     }
 
     useEffect(()=>{
@@ -35,6 +37,11 @@ export default function RandomPage(){
     if(status === "finding"){
         return(
             <FindingMatchPage />
+        )
+    }
+    if(status === "found"){
+        return(
+            <ChatPage />
         )
     }
     return(

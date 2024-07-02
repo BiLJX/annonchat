@@ -7,5 +7,6 @@ export interface TMessage {
         username: string
     }
     message: string,
-    seen_by: string[]
+    seen_by: string[],
+    sent_on: Date
 }
