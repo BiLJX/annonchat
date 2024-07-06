@@ -17,7 +17,7 @@ export default function Header({children, backButton, onBack}: Props){
         navigate(-1);
     }
     return(
-        <header className="fixed top-0 left-0 h-[var(--header-height)] border-b-[1px] border-b-c_gray-200 w-screen flex items-center p-xs">
+        <header className="fixed top-0 left-0 h-[var(--header-height)] border-b-[1px] border-b-c_gray-200 w-screen flex items-center p-xs bg-white">
             {backButton && <button className="text-c_gray-600 mr-4" onClick={onBackButtonClicked}>
                 <ArrowBackIosNewRoundedIcon />
             </button>}

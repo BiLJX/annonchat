@@ -91,7 +91,7 @@ export default function ChatPage(){
                         <HeaderHeading>{match[0].username}</HeaderHeading>
                     </div>
                 </Header>
-                <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-screen">
+                <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-[100svh]">
                     <div className="flex flex-col p-sm flex-1">
                         {
                             messages.map((msg, index)=>{
