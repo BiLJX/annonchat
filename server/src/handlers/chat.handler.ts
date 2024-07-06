@@ -7,14 +7,9 @@ import { makeId } from "lib/IdGen";
 import { SocketChatEvents, SocketEvents, TMessageSendRequest } from "@shared/sockets/socketEvents.type";
 export const chatHandler = async (io: Server, socket: Socket) => {
     const user_id = socket.user_id;
-    const onMessage = async ({room_id, message}: TMessageSendRequest) => {
-        console.log("\n\n\nMessage: "+message+" room_id:"+room_id)
-        const room_key = MatchKeys.ROOM + room_id;
-        const is_member = await redis.sIsMember(room_key, user_id);
-        console.log("----\nIs Member: "+is_member);
+    const onMessage = async ({room_id, message, message_id: old_msg_id}: TMessageSendRequest, cb: (message_data: TMessage, old_msg_id: string)=>void) => {
+        const is_member = socket.rooms.has(room_id);
         if(!is_member) return;
-        const members = await redis.sMembers(room_key);
-        console.log("----\nMembers: "+members);
         const author_data = (await User.aggregate([
             {
                 $match: {user_id}
@@ -36,11 +31,8 @@ export const chatHandler = async (io: Server, socket: Socket) => {
             message_id: makeId(),
             sent_on: new Date()
         }
-        console.log("----\n Message Data: "+messageData);
-        members.forEach(member_id=>{
-            if(member_id === user_id) return;
-            io.to(member_id).emit(SocketChatEvents.MESSAGE_SEND, messageData);
-        })
+        socket.to(room_id).emit(SocketChatEvents.MESSAGE_SEND, messageData);
+        cb(messageData, old_msg_id);
     }
     socket.on(SocketChatEvents.MESSAGE_SEND, onMessage);
 }

@@ -6,7 +6,7 @@ import { RandomChatTypes } from "@shared/types/random.type";
 interface MainState {
     type: RandomChatTypes,
     status: "idle"|"finding"|"found",
-    match: TUser|TUser[]|null,
+    match: TUser[],
     room_id: string|null
 }
 

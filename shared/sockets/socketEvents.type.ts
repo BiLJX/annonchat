@@ -41,7 +41,8 @@ export interface TMatchFound {
 
 interface TMessageSendRequestMain {
     room_id: string, 
-    message: string, 
+    message: string,
+    message_id: string 
 }
 
 interface TMessageSendRequestRandom extends TMessageSendRequestMain {

@@ -13,6 +13,7 @@ interface MainProps {
     isFirst?: boolean,
     isSingle?: boolean,
     pfp?: string,
+    isDelivered?: boolean
 
 }
 
@@ -45,23 +46,29 @@ export default function ChatBubble(props: GroupChatProps | SingleChatProps) {
             {AvatarComp}
             <div className="flex flex-col space-y-1">
                 {SenderNameComp}
-                <div className={cn(
-                        "px-4 py-2 bg-c_gray-200 rounded-3xl text-c_gray-700 flex space-x-4",
-                        {
-                            "bg-c_blue-900": props.isMine,
-                            "rounded-br-[0]":  props.isMine && props.isFirst,
-                            "rounded-tr-[0]": props.isMine && props.isLast,
-                            "rounded-r-[0]": props.isMine && !props.isSingle && !props.isLast && !props.isFirst,
+                <div className="flex space-x-4">
+                    <div className={cn(
+                            "px-4 py-2 bg-c_gray-200 rounded-3xl text-c_gray-700 flex space-x-4",
+                            {
+                                "bg-c_blue-900": props.isMine,
+                                "rounded-br-[0]":  props.isMine && props.isFirst,
+                                "rounded-tr-[0]": props.isMine && props.isLast,
+                                "rounded-r-[0]": props.isMine && !props.isSingle && !props.isLast && !props.isFirst,
 
-                            "rounded-bl-[0]":  !props.isMine && props.isFirst,
-                            "rounded-tl-[0]": !props.isMine && props.isLast,
-                            "rounded-l-[0]": !props.isMine && !props.isSingle && !props.isLast && !props.isFirst,
-                        }
-                    )
-                }>
-                    <div className={cn("flex-1", {"text-white": props.isMine})}>{props.text}</div>
-                    <div className={cn("flex flex-col justify-end text-c_gray-500 text-xs", {"text-gray-50": props.isMine})}>{moment(props.time).format("hh:mm a")}</div>
+                                "rounded-bl-[0]":  !props.isMine && props.isFirst,
+                                "rounded-tl-[0]": !props.isMine && props.isLast,
+                                "rounded-l-[0]": !props.isMine && !props.isSingle && !props.isLast && !props.isFirst,
+
+                                "bg-c_blue-500": !props.isDelivered
+                            }
+                        )
+                    }>
+                        <div className={cn("flex-1", {"text-white": props.isMine})}>{props.text}</div>
+                        <div className={cn("flex flex-col justify-end text-c_gray-500 text-xs", {"text-gray-50": props.isMine})}>{moment(props.time).format("hh:mm a")}</div>
+                    </div>
+                    {!props.isDelivered && <div className="w-[10px] h-[10px] rounded-full bg-c_gray-200"/>}
                 </div>
+                
             </div>
         </div>
     )

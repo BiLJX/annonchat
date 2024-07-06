@@ -7,34 +7,8 @@ import { Server, Socket } from "socket.io";
 export enum MatchKeys {
     INDVIDUAL_QUE = "matchmakingIndieQue",
     GROUP_QUE = "matchmakingGroupQue",
-    INDIVIDAL_ROOM = "indieRoom:",
     ROOM_MAP = "roomMap:",
     LOCK_USER = "lock",
-    ROOM = "room",
-}
-
-
-
-const leaveRoom = async(user_id: string, room_id: string) => {
-    //roomkey
-    const key = MatchKeys.ROOM + room_id;
-    const map_key = MatchKeys.ROOM_MAP+user_id
-    const is_member = await redis.sIsMember(key, user_id);
-    if(!is_member) return;
-    await redis.sRem(key, user_id);
-    await redis.del(map_key);
-    const members = await redis.sMembers(key);
-    if(members.length === 0){
-        await redis.del(key);
-    }
-}
-
-const joinRoom = async(members: string[], room_id: string) => {
-    const key = MatchKeys.ROOM + room_id;
-    await redis.sAdd(key, members);
-    for(let member_id of members){
-        await redis.set(MatchKeys.ROOM_MAP+member_id, room_id);
-    }
 }
 
 const getRoomId = async(user_id: string) => {
@@ -45,13 +19,6 @@ const getRoomId = async(user_id: string) => {
 const leaveQue = async(user_id: string) => {
     await redis.lRem(MatchKeys.INDVIDUAL_QUE, 1, user_id);
     await redis.lRem(MatchKeys.GROUP_QUE, 1, user_id);
-}
-
-const isUserInQue = async(user_id: string) => {
-    const user_pos_i = await redis.lPos(MatchKeys.INDVIDUAL_QUE, user_id);
-    const user_pos_g = await redis.lPos(MatchKeys.GROUP_QUE, user_id);
-    if(user_pos_i || user_pos_g) return true;
-    return false
 }
 
 const lockUser = async(user_id: string) => {
@@ -65,19 +32,24 @@ const unlockUser = async(user_id: string) => {
     await redis.del(MatchKeys.LOCK_USER+user_id);
 }
 
-const isUserLocked = async(user_id: string) => {
-    const locked = await redis.get(MatchKeys.LOCK_USER+user_id)
-    return !locked;
-}
-
-
-
 export const matchHandler = async(io: Server, socket: Socket) => {
     const user_id = socket.user_id;
+    
+    const joinRoom = async(members: string[], room_id: string) => {
+        for(let member_id of members){
+            io.in(member_id).socketsJoin(room_id);
+            await redis.set(MatchKeys.ROOM_MAP+member_id, room_id);
+        }
+    }
+    const leaveRoom = async(user_id: string, room_id: string) => {
+        socket.leave(room_id);
+        const map_key = MatchKeys.ROOM_MAP+user_id
+        await redis.del(map_key);
+    }
     const handleIndividual = async() => {
         const match_user_id = await redis.rPop(MatchKeys.INDVIDUAL_QUE);
         //if no user found then stay in que
-        if(!match_user_id){
+        if(!match_user_id && match_user_id !== user_id){
             await redis.lPush(MatchKeys.INDVIDUAL_QUE, user_id);
             return;
         }
@@ -214,6 +186,7 @@ export const matchHandler = async(io: Server, socket: Socket) => {
     const handleCancel = async() => {
         try {
             const room_id = await getRoomId(user_id);
+            if(room_id) io.to(room_id).emit(SocketEvents.MATCH_CANCEL, "Match Disconnected")
             await leaveQue(user_id);
             await unlockUser(user_id)
             if(!room_id) return;

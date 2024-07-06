@@ -5,20 +5,36 @@ import Header, { HeaderHeading } from "@/components/Header/Header.component";
 import { useEffect, useState } from "react";
 import { TMessage } from "@shared/types/message.type"
 import { useSocket } from "@/Contexts/socket.context";
-import { SocketChatEvents, TMessageSendRequest } from "@shared/sockets/socketEvents.type";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store.redux";
+import { SocketChatEvents, SocketEvents, TMessageSendRequest } from "@shared/sockets/socketEvents.type";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store.redux";
 import useAuth from "@/hooks/auth.hook";
 import { ChatInput } from "@/components/ChatInput/chatInput.component";
+import { toastError } from "@/utils/toast.utils";
+import { cancelMatch } from "@/redux/featuers/random.slice";
+import { makeId } from "@/utils/IdGen";
+
+interface TMyMessage extends TMessage{
+    is_delivered: boolean;
+}
 
 export default function ChatPage(){
-    const { room_id, type } = useSelector((state: RootState)=>state.randomChat);
+    const { room_id, type, match } = useSelector((state: RootState)=>state.randomChat);
     const {currentUser} = useAuth();
-    const [messages, setMessages] = useState<TMessage[]>([]);
+    const [messages, setMessages] = useState<TMessage[]|TMyMessage[]>([]);
     const socket = useSocket();
-    const onMessage = (message: TMessage) => {
-        console.log(onMessage)
-        setMessages((messages)=>[...messages, message])
+    const dispatch = useDispatch<AppDispatch>();
+    const onMessageDelivered = (message: TMessage, old_message_id: string)=>{
+        if(message && old_message_id){
+            setMessages((prevMessages)=>prevMessages.map(x=>{
+                if(x.message_id === old_message_id){
+                    const myMessage = x as TMyMessage;
+                    myMessage.is_delivered = true;
+                    return myMessage
+                }
+                return x;
+            }))
+        }
     }
     const sendMessage = (text: string) => {
         if(!socket || !room_id) return;
@@ -27,10 +43,11 @@ export default function ChatPage(){
             is_random_room: true,
             message: text,
             room_id: room_id||"",
+            message_id: makeId()
         }
-       socket.emit(SocketChatEvents.MESSAGE_SEND, data)
+       socket.emit(SocketChatEvents.MESSAGE_SEND, data, onMessageDelivered)
         if(!currentUser) return;
-        const message: TMessage = {
+        const message: TMyMessage = {
             author_data: {
                 user_id: currentUser.user_id,
                 pfp_url: currentUser.pfp_url,
@@ -38,26 +55,40 @@ export default function ChatPage(){
             },
             conversation_id: room_id||"",
             message: text,
-            message_id: "asd",
+            message_id: data.message_id,
             seen_by: [],
-            sent_on: new Date()
+            sent_on: new Date(),
+            is_delivered: false
         }
         setMessages((messages)=>[...messages, message])
     }
-
+    const onMessage = (message: TMessage) => {
+        setMessages((messages)=>[...messages, message])
+    }
+    const onLeave = (msg: string) => {
+        toastError(msg);
+        dispatch(cancelMatch());
+    }
+    const cancel = () => {
+        if(!socket) return;
+        socket.emit(SocketEvents.MATCH_CANCEL);
+        dispatch(cancelMatch());
+    }
     useEffect(()=>{
         if(!socket) return;
         socket.on(SocketChatEvents.MESSAGE_SEND, onMessage);
+        socket.on(SocketEvents.MATCH_CANCEL, onLeave);
         return(()=>{
             socket.off(SocketChatEvents.MESSAGE_SEND, onMessage);
+            socket.off(SocketEvents.MATCH_CANCEL, onLeave);
         })
     }, [socket])
     return(
             <>
-                <Header backButton>
+                <Header backButton onBack={cancel}>
                     <div className="space-x-4 flex items-center">
-                        <Avatar src = "https://pics.craiyon.com/2023-07-15/dc2ec5a571974417a5551420a4fb0587.webp" size={35} />
-                        <HeaderHeading>BiLJX</HeaderHeading>
+                        <Avatar src = {match[0].pfp_url} size={35} />
+                        <HeaderHeading>{match[0].username}</HeaderHeading>
                     </div>
                 </Header>
                 <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-screen">
@@ -87,6 +118,7 @@ export default function ChatPage(){
                                     isFirst = {isFirstMessage}
                                     isSingle = {isSingleMessage}
                                     isMine = {currentUser?.user_id===msg.author_data.user_id}
+                                    isDelivered = {currentUser?.user_id!==msg.author_data.user_id || (msg as TMyMessage).is_delivered}
                                     />
                                 )
                                
