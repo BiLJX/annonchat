@@ -23,7 +23,7 @@ export default function RandomPage(){
         dispatch(findMatch());
         socket.emit(SocketEvents.MATCH_FIND, {type});
     }
-    const handleFound = (data: {user: TUser[], room_id: string}) => {
+    const handleFound = (data: {users: TUser[], room_id: string}) => {
         dispatch(setMatch(data));
     }
 

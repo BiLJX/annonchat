@@ -14,23 +14,24 @@ interface MainProps {
     isSingle?: boolean,
     pfp?: string,
     isDelivered?: boolean
-
+    type: "group"|"individual",
+    sender_name?: string,
 }
 
-interface GroupChatProps extends MainProps {
-    
-    sender_name: string,
-    type: "group"
-}
 
-interface SingleChatProps extends MainProps {
-    type: "individual"
-}
-export default function ChatBubble(props: GroupChatProps | SingleChatProps) {
+export default function ChatBubble(props: MainProps) {
     let AvatarComp: JSX.Element = props.type === "individual"?<></>:<div className="w-[40px]" />;
     let SenderNameComp: JSX.Element = <></>;
     if (!props.isMine) {
-        if(props.isLast  && props.type === "group"){
+        if(props.isSingle && props.type === "group" ){
+            AvatarComp = (
+                <div className="flex flex-col justify-end">
+                    <Avatar src={props.pfp || ""} size={40} />
+                </div>
+            )
+            SenderNameComp = (<div className="px-4 text-c_gray-500 font-medium">{props.sender_name}</div>)
+        }
+        else if(props.isLast  && props.type === "group"){
             AvatarComp = (
                 <div className="flex flex-col justify-end">
                     <Avatar src={props.pfp || ""} size={40} />
@@ -42,7 +43,7 @@ export default function ChatBubble(props: GroupChatProps | SingleChatProps) {
     }
 
     return (
-        <div className={cn("flex space-x-2 mb-[1px]", {"justify-end": props.isMine, "mb-4": props.isLast})}>
+        <div className={cn("flex space-x-2 mb-[1px]", {"justify-end": props.isMine, "mb-4": props.isLast || props.isSingle})}>
             {AvatarComp}
             <div className="flex flex-col space-y-1">
                 {SenderNameComp}

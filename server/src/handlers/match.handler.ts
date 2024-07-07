@@ -94,13 +94,13 @@ export const matchHandler = async(io: Server, socket: Socket) => {
         await joinRoom([user_id, match_user_id], room_id);
         
         //response for current user
-        const res1: TIndieMatchFound = {
-            user,
+        const res1: TMatchFound = {
+            users: user,
             room_id
         }
         //response for found user
-        const res2: TIndieMatchFound = {
-            user: current_user,
+        const res2: TMatchFound = {
+            users: current_user,
             room_id
         }
         socket.emit(SocketEvents.MATCH_FOUND, res1);
@@ -108,14 +108,19 @@ export const matchHandler = async(io: Server, socket: Socket) => {
         await unlockUser(match_user_id);
     }
     const handleGroup = async() => {
-        const match_user_ids = await redis.lRange(MatchKeys.GROUP_QUE, 0, 4);
-        if(match_user_ids.length < 4){
+        const GROUP_MEMBERS_LIMIT = 3
+        const match_user_ids = await redis.lRange(MatchKeys.GROUP_QUE, 0, GROUP_MEMBERS_LIMIT-1);
+        if(match_user_ids.length < GROUP_MEMBERS_LIMIT-1){
             await redis.lPush(MatchKeys.GROUP_QUE, user_id);
             return;
         }
         match_user_ids.forEach(async ids=>{
-            await lockUser(ids);
-            await leaveQue(ids);
+            const isLocked = await lockUser(ids);
+            if(isLocked){
+                handleGroup();
+                return console.log("User Locked")
+            }
+            
         })
         const users = await User.aggregate([
             {
@@ -148,21 +153,19 @@ export const matchHandler = async(io: Server, socket: Socket) => {
         if(!current_user) return;
         if(users.length === 0) return;
         const room_id = makeId();
-        await leaveQue(user_id);
-        match_user_ids.forEach(async x=>{
-            await leaveQue(x);
-        })
         await joinRoom([...match_user_ids, user_id], room_id);
         const res: TMatchFound = {
             users,
             room_id,
         }
+        await leaveQue(user_id);
         match_user_ids.forEach(async x=> {
             const res: TMatchFound = {
                 users: users.filter(user_id=>user_id!==x),
                 room_id
             }
             io.to(x).emit(SocketEvents.MATCH_FOUND, res);
+            await leaveQue(x);
         })
         socket.emit(SocketEvents.MATCH_FOUND, res);
     }

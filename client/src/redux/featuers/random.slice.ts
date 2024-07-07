@@ -39,10 +39,10 @@ const randomChatSlice = createSlice({
                 state.status = "idle";
             }
         },
-        setMatch: (state, action: PayloadAction<{user: TUser[], room_id: string}>) => {
+        setMatch: (state, action: PayloadAction<{users: TUser[], room_id: string}>) => {
             state.match = [];
             state.status = "found";
-            state.match = action.payload.user
+            state.match = action.payload.users
             state.room_id = action.payload.room_id
         },
         cancelFind: (state) => {

@@ -83,6 +83,15 @@ export default function ChatPage(){
             socket.off(SocketEvents.MATCH_CANCEL, onLeave);
         })
     }, [socket])
+    let MembersListContent: JSX.Element = <></>;
+    if(type === "group") MembersListContent = (
+        <div className="flex flex-col pb-2 border-b-[1px] border-b-c_gray-500  mb-4">
+            <h1 className="text-xl font-semibold text-c_gray-800 mb-2">Group Members:</h1>
+            <ul className="text-c_gray-600 list-decimal px-sm font-medium">
+                {match.map(x=><li>{x.username}</li>)}
+            </ul>
+        </div>
+    )
     return(
             <>
                 <Header backButton onBack={cancel}>
@@ -92,7 +101,8 @@ export default function ChatPage(){
                     </div>
                 </Header>
                 <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-[100svh]">
-                    <div className="flex flex-col p-sm flex-1">
+                    <div className="flex flex-col p-sm flex-1 overflow-x-hidden overflow-y-auto">
+                        {MembersListContent}
                         {
                             messages.map((msg, index)=>{
                                 
@@ -110,7 +120,7 @@ export default function ChatPage(){
                                     <ChatBubble
                                     author_id={msg.author_data.user_id}
                                     message_id={msg.message_id}
-                                    type="individual"
+                                    type={type}
                                     text={msg.message}
                                     time={msg.sent_on}
                                     key={index}
@@ -119,6 +129,8 @@ export default function ChatPage(){
                                     isSingle = {isSingleMessage}
                                     isMine = {currentUser?.user_id===msg.author_data.user_id}
                                     isDelivered = {currentUser?.user_id!==msg.author_data.user_id || (msg as TMyMessage).is_delivered}
+                                    pfp={msg.author_data.pfp_url}
+                                    sender_name={msg.author_data.username}
                                     />
                                 )
                                
