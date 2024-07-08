@@ -34,7 +34,7 @@ export function ChatInput({onSend}: Props){
         <div className="border-t-[1px] border-t-c_gray-200 flex justify-center p-4">
             <div className="flex py-2 px-2 w-full bg-c_gray-200 rounded-[30px] items-center">
                 <textarea onKeyDown={handleKeyDown} onChange={handleChange} value={message} ref={textareaRef} style={{height: "20px"}} className="px-4 bg-transparent font-normal text-sm placeholder:text-c_gray-500 flex-1 text-c_gray-600" placeholder="Message..."  />
-                <CustomButton colorVariant="secondary" className="px-4 py-1 rounded-full">
+                <CustomButton colorVariant="secondary" className="px-4 py-1 rounded-full" onClick={()=>onSend(message)}>
                     <SendRoundedIcon className="rotate-[-45deg] translate-y-[-3px] translate-x-[2px]"/>
                 </CustomButton>
             </div>

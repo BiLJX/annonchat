@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from "@/redux/store.redux";
 import useAuth from "@/hooks/auth.hook";
 import { ChatInput } from "@/components/ChatInput/chatInput.component";
 import { toastError } from "@/utils/toast.utils";
-import { cancelMatch } from "@/redux/featuers/random.slice";
+import { cancelMatch, removeMember } from "@/redux/featuers/random.slice";
 import { makeId } from "@/utils/IdGen";
 
 interface TMyMessage extends TMessage{
@@ -65,9 +65,9 @@ export default function ChatPage(){
     const onMessage = (message: TMessage) => {
         setMessages((messages)=>[...messages, message])
     }
-    const onLeave = (msg: string) => {
-        toastError(msg);
-        dispatch(cancelMatch());
+    const onMemberLeave = ({user_id, username}: {user_id: string, username: string}) => {
+        toastError(`${username} disconnected`);
+        dispatch(removeMember(user_id));
     }
     const cancel = () => {
         if(!socket) return;
@@ -77,10 +77,10 @@ export default function ChatPage(){
     useEffect(()=>{
         if(!socket) return;
         socket.on(SocketChatEvents.MESSAGE_SEND, onMessage);
-        socket.on(SocketEvents.MATCH_CANCEL, onLeave);
+        socket.on(SocketEvents.MATCH_CANCEL, onMemberLeave);
         return(()=>{
             socket.off(SocketChatEvents.MESSAGE_SEND, onMessage);
-            socket.off(SocketEvents.MATCH_CANCEL, onLeave);
+            socket.off(SocketEvents.MATCH_CANCEL, onMemberLeave);
         })
     }, [socket])
     let MembersListContent: JSX.Element = <></>;
@@ -96,8 +96,8 @@ export default function ChatPage(){
             <>
                 <Header backButton onBack={cancel}>
                     <div className="space-x-4 flex items-center">
-                        <Avatar src = {match[0].pfp_url} size={35} />
-                        <HeaderHeading>{match[0].username}</HeaderHeading>
+                        <Avatar src = {match.find(x=>x.user_id !== currentUser?.user_id)?.pfp_url||""} size={35} />
+                        <HeaderHeading>{match.find(x=>x.user_id !== currentUser?.user_id)?.username||""}</HeaderHeading>
                     </div>
                 </Header>
                 <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-[100svh]">
@@ -123,7 +123,7 @@ export default function ChatPage(){
                                     type={type}
                                     text={msg.message}
                                     time={msg.sent_on}
-                                    key={index}
+                                    key={msg.message_id}
                                     isLast = {isLastMessage}
                                     isFirst = {isFirstMessage}
                                     isSingle = {isSingleMessage}

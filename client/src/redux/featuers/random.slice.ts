@@ -39,6 +39,15 @@ const randomChatSlice = createSlice({
                 state.status = "idle";
             }
         },
+        removeMember: (state, action: PayloadAction<string>) => {
+            if(state.status === "found") {
+                state.match = state.match.filter(x=>x.user_id !== action.payload);
+                if(state.match.length <= 1){
+                        state.match = [];
+                        state.status = "idle";
+                }
+            }
+        },
         setMatch: (state, action: PayloadAction<{users: TUser[], room_id: string}>) => {
             state.match = [];
             state.status = "found";
@@ -55,4 +64,4 @@ const randomChatSlice = createSlice({
 })
 
 export default randomChatSlice.reducer;
-export const {cancelMatch, changeType, findMatch, setMatch, cancelFind} = randomChatSlice.actions;
+export const {cancelMatch, changeType, findMatch, setMatch, cancelFind, removeMember} = randomChatSlice.actions;

@@ -93,18 +93,12 @@ export const matchHandler = async(io: Server, socket: Socket) => {
         await leaveQue(match_user_id);
         await joinRoom([user_id, match_user_id], room_id);
         
-        //response for current user
-        const res1: TMatchFound = {
-            users: user,
+        //response
+        const res: TMatchFound = {
+            users: [...current_user, ...user],
             room_id
         }
-        //response for found user
-        const res2: TMatchFound = {
-            users: current_user,
-            room_id
-        }
-        socket.emit(SocketEvents.MATCH_FOUND, res1);
-        io.to(match_user_id).emit(SocketEvents.MATCH_FOUND, res2);
+        io.to(room_id).emit(SocketEvents.MATCH_FOUND, res);
         await unlockUser(match_user_id);
     }
     const handleGroup = async() => {
@@ -126,7 +120,7 @@ export const matchHandler = async(io: Server, socket: Socket) => {
             {
                 $match: {
                     user_id: {
-                        $in: match_user_ids
+                        $in: [user_id, ...match_user_ids]
                     }
                 }
             },
@@ -159,15 +153,10 @@ export const matchHandler = async(io: Server, socket: Socket) => {
             room_id,
         }
         await leaveQue(user_id);
+        io.to(room_id).emit(SocketEvents.MATCH_FOUND, res)
         match_user_ids.forEach(async x=> {
-            const res: TMatchFound = {
-                users: users.filter(user_id=>user_id!==x),
-                room_id
-            }
-            io.to(x).emit(SocketEvents.MATCH_FOUND, res);
             await leaveQue(x);
         })
-        socket.emit(SocketEvents.MATCH_FOUND, res);
     }
 
     socket.on(SocketEvents.MATCH_FIND, async(data: TSocketMatchRequest)=>{
@@ -188,12 +177,14 @@ export const matchHandler = async(io: Server, socket: Socket) => {
 
     const handleCancel = async() => {
         try {
-            const room_id = await getRoomId(user_id);
-            if(room_id) io.to(room_id).emit(SocketEvents.MATCH_CANCEL, "Match Disconnected")
             await leaveQue(user_id);
             await unlockUser(user_id)
+            const room_id = await getRoomId(user_id);
             if(!room_id) return;
             await leaveRoom(user_id, room_id);
+            const user = await User.findOne({user_id})
+            if(!user) return;
+            io.to(room_id).emit(SocketEvents.MATCH_CANCEL, {user_id, username: user.toJSON().username})
         } catch (error) {
             console.log(error);
         }
