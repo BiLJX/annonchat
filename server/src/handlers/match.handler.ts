@@ -33,7 +33,7 @@ const unlockUser = async(user_id: string) => {
 }
 
 export const matchHandler = async(io: Server<ChatMatchEvents.TClientToServer, ChatMatchEvents.TServerToClients>, socket: Socket<ChatMatchEvents.TClientToServer, ChatMatchEvents.TServerToClients>) => {
-    const user_id = socket.user_id;
+    const user_id = (socket as any).user_id as string;
     
     const joinRoom = async(members: string[], room_id: string) => {
         for(let member_id of members){

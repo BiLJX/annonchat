@@ -6,7 +6,7 @@ import { User } from "models/User.model";
 import { makeId } from "lib/IdGen";
 import { SocketChatEvents, SocketEvents, TMessageSendRequest } from "@shared/sockets/socketEvents.type";
 export const chatHandler = async (io: Server, socket: Socket) => {
-    const user_id = socket.user_id;
+    const user_id = (socket as any).user_id;
     const onMessage = async ({room_id, message, message_id: old_msg_id}: TMessageSendRequest, cb: (message_data: TMessage, old_msg_id: string)=>void) => {
         const is_member = socket.rooms.has(room_id);
         if(!is_member) return;

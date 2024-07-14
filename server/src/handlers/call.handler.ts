@@ -47,7 +47,7 @@ const unlockUser = async (userId: string): Promise<number> => {
 };
 
 export const callMatchHandler = (io: Server<CallMatchEvents.TClientToServer, CallMatchEvents.TServerToClients>, socket: Socket): void => {
-    const userId = socket.user_id;
+    const userId = (socket as any).user_id;
 
     const joinRoom = async (members: string[], roomId: string): Promise<void> => {
         for (const memberId of members) {
@@ -63,10 +63,15 @@ export const callMatchHandler = (io: Server<CallMatchEvents.TClientToServer, Cal
 
     const handleIndividual = async (): Promise<void> => {
         const matchUserId = await redis.rPop(CallMatchKeys.INDIVIDUAL_QUEUE);
-        if (!matchUserId && matchUserId !== userId) {
+        if (!matchUserId) {
             await redis.lPush(CallMatchKeys.INDIVIDUAL_QUEUE, userId);
             return;
         }
+        if(matchUserId === userId){
+            await redis.lPush(CallMatchKeys.INDIVIDUAL_QUEUE, userId);
+            return;
+        }
+
 
         const isLocked = await lockUser(matchUserId);
         if (isLocked) {

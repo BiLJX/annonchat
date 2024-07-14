@@ -43,7 +43,6 @@ console.log("Connecting to MongoDB...");
 mongoose.connect(process.env.MONGO_URI || "").then(main);
 
 
-
 async function main(){
     console.log("Connected to MongoDB");
     console.log("Connecting to Redis...");
@@ -69,14 +68,14 @@ async function main(){
             const { user_id }: any = jwt.verify(token, process.env.USER_SESSION_JWT||"");
             const user = await User.findOne({ user_id });
             if (!user) return next(new Error("Not Authorized"));
-            socket.user_id = user.user_id;
+            (socket as any).user_id = user.user_id;
             return next();
         } catch (error) {
             console.log(error);
         }
     })
     io.on(SocketEvents.CONNECT, socket=>{
-        socket.join(socket.user_id);
+        socket.join((socket as any).user_id);
         matchHandler(io, socket);
         chatHandler(io, socket);
         callMatchHandler(io, socket)
