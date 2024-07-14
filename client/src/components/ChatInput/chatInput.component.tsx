@@ -40,3 +40,5 @@ export function ChatInput({onSend}: Props){
         </div>
     )
 }
+
+// "mongodb+srv://BiLJX:42a3RePvN1DGXkDh@cluster0.vyegx.mongodb.net/annonchat?retryWrites=true&w=majority"
