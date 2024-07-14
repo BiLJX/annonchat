@@ -5,7 +5,7 @@ import GroupImage from "@/assets/groupils.jpg";
 import IndieImage from "@/assets/individualils.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { cancelFind, changeType, findMatch, setMatch } from "@/redux/featuers/random.slice";
+import { changeType, findMatch, setMatch } from "@/redux/featuers/random.slice";
 import { useSocket } from "@/Contexts/socket.context";
 import { ChatMatchEvents, SocketEvents } from "@shared/sockets/socketEvents.type"
 import { useEffect } from "react";

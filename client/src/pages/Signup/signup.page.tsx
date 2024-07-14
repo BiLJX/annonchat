@@ -5,7 +5,7 @@ import AuthHeader from "@/components/Auth/Header.component";
 import AuthFooter from "@/components/Auth/Footer.component";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TSignupRequest } from "@shared/api/authApi.type";
 import { signup } from "@/redux/featuers/user.slice";
 import { toastError } from "@/utils/toast.utils";

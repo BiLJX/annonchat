@@ -1,4 +1,4 @@
-import { TSignupRequest,TLoginRequest, TSignupResponse, TloginResponse } from "@shared/api/authApi.type";
+import { TSignupRequest,TLoginRequest } from "@shared/api/authApi.type";
 import axios from "./axios";
 import { TUser } from "@/types/user";
 export const loginUser = async (data: TLoginRequest) => {

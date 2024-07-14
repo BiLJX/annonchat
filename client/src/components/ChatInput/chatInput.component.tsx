@@ -1,4 +1,3 @@
-import { TextareaAutosize } from "@mui/base";
 import CustomButton from "../Buttons/Button.component";
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import { useEffect, useRef, useState } from "react";

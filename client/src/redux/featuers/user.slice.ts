@@ -2,7 +2,6 @@ import { getAuthStatus, loginUser, signupUser } from '@/api/auth.api';
 import { uploadUserPfp } from '@/api/user.api';
 import { TUser } from '@/types/user';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { TLoginRequest, TSignupRequest } from '@shared/api/authApi.type';
 
 const initialState: TReduxAsyncState<TUser|null> = {
@@ -67,7 +66,7 @@ const userSlice = createSlice({
             state.is_loading = true;
             state.error = false;
         })
-        builder.addCase(signup.rejected, (state, action)=>{
+        builder.addCase(signup.rejected, (state)=>{
             state.is_loading = false;
             state.error = true;
             state.message = "Network request Error"

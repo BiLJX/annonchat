@@ -5,17 +5,10 @@ import GroupImage from "@/assets/CallGroup.png";
 import IndieImage from "@/assets/CallIndie.png";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
-import { cancelFind, changeType, findMatch, setMatch } from "@/redux/featuers/random.slice";
+import { changeType } from "@/redux/featuers/random.slice";
 
-import { useSocket } from "@/Contexts/socket.context";
-import { CallMatchEvents, SocketCallEvents, SocketEvents } from "@shared/sockets/socketEvents.type"
-import { useEffect } from "react";
 import FindingMatchPage from "../Finding/finding.page";
-import ChatPage from "../Chat/chat.page";
-import { TUser } from "@/types/user";
 import BottomNav from "@/components/Nav/BottomNav.component";
-import { Socket } from "socket.io-client";
-import { RandomCallActions, TCallUser } from "@/redux/featuers/randomCall.slice";
 import CallPage from "../Call/Call.page";
 import useWebRtc from "@/hooks/rtc.hook";
 const GROUP_TEXT = "Group mode allows you to find random matches of 3 people. You will then be able to video call with these users.";

@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 export default function FindingMatchPage(){
     const socket = useSocket();
     const dispatch = useDispatch();
-    const handleCancel = (data: any) => {
+    const handleCancel = () => {
         socket?.emit(SocketEvents.MATCH_FIND_CANCEL)
         dispatch(cancelFind());
     }

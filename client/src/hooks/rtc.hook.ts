@@ -6,7 +6,6 @@ import { SocketCallEvents } from "@shared/sockets/socketEvents.type";
 import { MediaConnection } from "peerjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import terminal from "virtual:terminal";
 import useAuth from "./auth.hook";
 import { toastError } from "@/utils/toast.utils";
 
@@ -58,9 +57,9 @@ export default function useWebRtc() {
         console.log("Incoming call", call);
         dispatch(RandomCallActions.addConnection(call));
         call.answer(myStream);
-        call.on("stream", stream => {
+        // call.on("stream", stream => {
            
-        });
+        // });
         call.on("close", () => {
             console.log("Incoming call closed", call.peer);
         });

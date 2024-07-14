@@ -1,6 +1,6 @@
 import { TUser } from "@/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RandomCallTypes, RandomChatTypes } from "@shared/types/random.type";
+import { RandomCallTypes } from "@shared/types/random.type";
 import { MediaConnection } from "peerjs";
 
 export interface TCallUser extends TUser {

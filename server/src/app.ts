@@ -14,7 +14,7 @@ import { matchHandler } from "handlers/match.handler";
 import { redis } from "lib/redis";
 import { chatHandler } from "handlers/chat.handler";
 import { callMatchHandler } from "handlers/call.handler";
-
+import path from "path"
 
 const PORT = process.env.PORT || 4000;
 const app = express();
@@ -29,7 +29,15 @@ cloudinary.config({
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true,  }));
+app.use(express.static(path.join("dist")))
+
 app.use("/api", ApiRoutes);
+
+
+
+app.get("/*", (req, res)=>{
+    res.sendFile(path.join(__dirname, "..", "dist", "index.html"))
+})
 
 console.log("Connecting to MongoDB...");
 mongoose.connect(process.env.MONGO_URI || "").then(main);

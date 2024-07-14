@@ -3,7 +3,7 @@ import AvatarInput from "@/components/Input/AvatarInput.component";
 import { uploadPfp } from "@/redux/featuers/user.slice";
 import { AppDispatch, RootState } from "@/redux/store.redux";
 import { toastError } from "@/utils/toast.utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -31,7 +31,6 @@ export default function PfpUploadPage(){
                 </div>
                 <div className="flex w-full border-[1px] border-c_gray-200 rounded-lg">
                     <CustomButton onClick={onUpload} disabled = {is_loading} className="flex-1">{is_loading?"loading...":"Continue"}</CustomButton>
-                    <CustomButton className="flex-1" colorVariant="transparent">Skip</CustomButton>
                 </div>
             </div> 
         </div>
