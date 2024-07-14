@@ -54,12 +54,11 @@ export default function CallPage(){
             <HeaderContentWrapper className="flex flex-col min-h-full w-full" outerClassName="h-[100svh]">
                 <div className="grid grid-cols-2 grid-rows-2 flex-1">
                     <div className="bg-c_gray-500">
-                        <video className="h-full object-cover" ref = {myVideoRef}/>
+                        <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef}/>
                     </div>
                     {
                         userStreams.map((stream, i)=>{
-                            
-                            return <video className="h-full object-cover" key = {i} ref={(el)=>{if(el)el.srcObject=stream; el?.play()}} />
+                            return <video playsInline controls={false} className="h-full object-cover" key = {i} ref={(el)=>{if(el)el.srcObject=stream; el?.play()}} />
                         })
                     }
                     {/* <div className="bg-c_gray-500" />
