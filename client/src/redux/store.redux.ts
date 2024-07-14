@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from './featuers/user.slice'
 import randomChatReducer from "./featuers/random.slice"
+import randomCallSlice from './featuers/randomCall.slice'
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        randomChat: randomChatReducer
+        randomChat: randomChatReducer,
+        randomCall: randomCallSlice
     },
 })
 

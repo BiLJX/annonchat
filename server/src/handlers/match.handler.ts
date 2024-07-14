@@ -1,4 +1,4 @@
-import { SocketEvents, TIndieMatchFound, TMatchFound, TSocketMatchRequest, TSocketRequest, TSocketResponseData } from "@shared/sockets/socketEvents.type";
+import { SocketEvents, TIndieMatchFound, TMatchFound, TSocketMatchRequest, ChatMatchEvents} from "@shared/sockets/socketEvents.type";
 import { makeId } from "lib/IdGen";
 import { redis } from "lib/redis";
 import { User } from "models/User.model";
@@ -32,7 +32,7 @@ const unlockUser = async(user_id: string) => {
     await redis.del(MatchKeys.LOCK_USER+user_id);
 }
 
-export const matchHandler = async(io: Server, socket: Socket) => {
+export const matchHandler = async(io: Server<ChatMatchEvents.TClientToServer, ChatMatchEvents.TServerToClients>, socket: Socket<ChatMatchEvents.TClientToServer, ChatMatchEvents.TServerToClients>) => {
     const user_id = socket.user_id;
     
     const joinRoom = async(members: string[], room_id: string) => {
@@ -108,14 +108,14 @@ export const matchHandler = async(io: Server, socket: Socket) => {
             await redis.lPush(MatchKeys.GROUP_QUE, user_id);
             return;
         }
-        match_user_ids.forEach(async ids=>{
-            const isLocked = await lockUser(ids);
+        for(const id of match_user_ids){
+            const isLocked = await lockUser(id);
             if(isLocked){
                 handleGroup();
                 return console.log("User Locked")
             }
             
-        })
+        }
         const users = await User.aggregate([
             {
                 $match: {
@@ -131,20 +131,6 @@ export const matchHandler = async(io: Server, socket: Socket) => {
                 }
             }
         ]);
-        const current_user = await User.aggregate([
-            {
-                $match: {
-                    user_id
-                }
-            },
-            {
-                $project: {
-                    password: 0,
-                    email: 0
-                }
-            }
-        ]);
-        if(!current_user) return;
         if(users.length === 0) return;
         const room_id = makeId();
         await joinRoom([...match_user_ids, user_id], room_id);
@@ -184,6 +170,7 @@ export const matchHandler = async(io: Server, socket: Socket) => {
             await leaveRoom(user_id, room_id);
             const user = await User.findOne({user_id})
             if(!user) return;
+            
             io.to(room_id).emit(SocketEvents.MATCH_CANCEL, {user_id, username: user.toJSON().username})
         } catch (error) {
             console.log(error);

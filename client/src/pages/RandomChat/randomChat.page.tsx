@@ -7,23 +7,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store.redux";
 import { cancelFind, changeType, findMatch, setMatch } from "@/redux/featuers/random.slice";
 import { useSocket } from "@/Contexts/socket.context";
-import { SocketEvents } from "@shared/sockets/socketEvents.type"
+import { ChatMatchEvents, SocketEvents } from "@shared/sockets/socketEvents.type"
 import { useEffect } from "react";
-import FindingMatchPage from "./finding.page";
+import FindingMatchPage from "../Finding/finding.page";
 import ChatPage from "../Chat/chat.page";
 import { TUser } from "@/types/user";
+import BottomNav from "@/components/Nav/BottomNav.component";
+import { Socket } from "socket.io-client";
 const GROUP_TEXT = "Group mode allows you to find random matches of 5 people. You can also add members of the group as friend";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find a random match. You can also add the match as friend";
-export default function RandomPage(){
+export default function RandomChatPage(){
     const {status, type} = useSelector((state: RootState)=>state.randomChat);
     const dispatch = useDispatch<AppDispatch>();
-    const socket = useSocket();
+    const socket = useSocket() as Socket<ChatMatchEvents.TServerToClients, ChatMatchEvents.TClientToServer>;
     const onFind = () => {
         if(!socket) return;
         dispatch(findMatch());
         socket.emit(SocketEvents.MATCH_FIND, {type});
     }
     const handleFound = (data: {users: TUser[], room_id: string}) => {
+        console.log(data.users)
         dispatch(setMatch(data));
     }
 
@@ -48,10 +51,10 @@ export default function RandomPage(){
         <>
             <Header>
                 <div className="flex-1">
-                    <HeaderHeading className="text-center">Random Match</HeaderHeading>
+                    <HeaderHeading className="text-center">Random Chat</HeaderHeading>
                 </div>
             </Header>
-            <HeaderContentWrapper className="p-sm space-y-2">
+            <HeaderContentWrapper className="p-sm space-y-2" hasNav>
                 <div className="flex">
                     <CustomButton colorVariant={type === "group"?"secondary":"transparent"} className="flex-1" onClick={()=>dispatch(changeType("group"))}>Group</CustomButton>
                     <CustomButton colorVariant={type === "individual"?"secondary":"transparent"} className="flex-1" onClick={()=>dispatch(changeType("individual"))}>Individual</CustomButton>
@@ -64,11 +67,10 @@ export default function RandomPage(){
                     <p className="text-c_gray-700 text-sm font-medium">
                         {type === "group"?GROUP_TEXT:INDIVIDUAL_TEXT}
                     </p>
-                    <CustomButton className="w-full" onClick={onFind}>Find</CustomButton>
+                    <CustomButton className="w-full" onClick={onFind}>Start Chatting</CustomButton>
                 </div>
-               
-                
             </HeaderContentWrapper>
+            <BottomNav />
         </>
     )
 }

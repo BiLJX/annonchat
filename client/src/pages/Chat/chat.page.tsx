@@ -83,22 +83,31 @@ export default function ChatPage(){
             socket.off(SocketEvents.MATCH_CANCEL, onMemberLeave);
         })
     }, [socket])
+
     let MembersListContent: JSX.Element = <></>;
-    if(type === "group") MembersListContent = (
-        <div className="flex flex-col pb-2 border-b-[1px] border-b-c_gray-500  mb-4">
-            <h1 className="text-xl font-semibold text-c_gray-800 mb-2">Group Members:</h1>
-            <ul className="text-c_gray-600 list-decimal px-sm font-medium">
-                {match.map(x=><li>{x.username}</li>)}
-            </ul>
-        </div>
-    )
+    let HeaderContent: JSX.Element = <HeaderHeading>Group</HeaderHeading>
+    if(type === "group") {
+        MembersListContent = (
+            <div className="flex flex-col pb-2 border-b-[1px] border-b-c_gray-500  mb-4">
+                <h1 className="text-xl font-semibold text-c_gray-800 mb-2">Group Members:</h1>
+                <ul className="text-c_gray-600 list-decimal px-sm font-medium">
+                    {match.map(x=><li>{x.username}</li>)}
+                </ul>
+            </div>
+        )
+    }
+    else {
+        HeaderContent = (
+            <div className="space-x-4 flex items-center">
+                <Avatar src = {match.find(x=>x.user_id !== currentUser?.user_id)?.pfp_url||""} size={35} />
+                <HeaderHeading>{match.find(x=>x.user_id !== currentUser?.user_id)?.username||""}</HeaderHeading>
+            </div>
+        )
+    }
     return(
             <>
                 <Header backButton onBack={cancel}>
-                    <div className="space-x-4 flex items-center">
-                        <Avatar src = {match.find(x=>x.user_id !== currentUser?.user_id)?.pfp_url||""} size={35} />
-                        <HeaderHeading>{match.find(x=>x.user_id !== currentUser?.user_id)?.username||""}</HeaderHeading>
-                    </div>
+                    {HeaderContent}
                 </Header>
                 <HeaderContentWrapper className="flex flex-col h-full" outerClassName="h-[100svh]">
                     <div className="flex flex-col p-sm flex-1 overflow-x-hidden overflow-y-auto">

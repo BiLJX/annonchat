@@ -4,13 +4,15 @@ import LoginPage from "../pages/Login/login.page"
 import PfpUploadPage from "@/pages/PfpUpload/pfpupload.page"
 import ProtectedRouter from "./ProtectedRouter"
 import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch, RootState } from "@/redux/store.redux"
+import { useDispatch } from "react-redux"
+import { AppDispatch } from "@/redux/store.redux"
 import { getStatus } from "@/redux/featuers/user.slice"
-import RandomPage from "@/pages/Random/random.page"
+import RandomChatPage from "@/pages/RandomChat/randomChat.page"
+import RandomCallPage from "@/pages/RandomCall/randomCall.page"
 import { toastError } from "@/utils/toast.utils"
 import SocketContextProvider from "@/Contexts/socket.context"
-import ChatPage from "@/pages/Chat/chat.page"
+import CallPage from "@/pages/Call/Call.page"
+import PeerContextProvider from "@/Contexts/peer.context"
 
 function App() {
     const [isLoading, setIsLoading] = useState(true);
@@ -33,15 +35,20 @@ function App() {
     if(isLoading) return <>Loading...</>
     return (
         <SocketContextProvider>
-            <Routes>
-                <Route element = {<ProtectedRouter />}>
-                    <Route path="/" element={<RandomPage />} />
-                    {/* <Route path = "/chat/individual" element={<ChatPage />} /> */}
-                </Route>
-                <Route path = "/signup" element = {<SignupPage />} />
-                <Route path = "/login" element = {<LoginPage />} />
-                <Route path = "/upload/pfp" element = {<PfpUploadPage />} />
-            </Routes>
+            <PeerContextProvider>
+                <Routes>
+                    <Route element = {<ProtectedRouter />}>
+                        <Route path="/" element={<RandomCallPage />} />
+                        <Route path="/chat" element={<RandomChatPage />} />
+                        <Route path = "/call" element = {<CallPage />} />
+                        {/* <Route path = "/chat/individual" element={<ChatPage />} /> */}
+                    </Route>
+                    <Route path = "/signup" element = {<SignupPage />} />
+                    <Route path = "/login" element = {<LoginPage />} />
+                    <Route path = "/upload/pfp" element = {<PfpUploadPage />} />
+                </Routes>
+            </PeerContextProvider>
+            
         </SocketContextProvider>
         
     )
