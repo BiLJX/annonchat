@@ -9,10 +9,11 @@ import { CallMatchEvents, SocketCallEvents } from "@shared/sockets/socketEvents.
 import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Socket } from "socket.io-client";
-import terminal from "virtual:terminal";
+
 
 export default function CallPage(){
-    const { myStream } = useWebRtc();
+    const { myStream, userStreams } = useWebRtc();
+
     const myVideoRef = useRef<HTMLVideoElement>(null);
     const socket = useSocket() as Socket<CallMatchEvents.TServerToClients, CallMatchEvents.TClientToServer> | null;
     const dispatch = useDispatch();
@@ -36,6 +37,10 @@ export default function CallPage(){
     }
 
     useEffect(()=>{
+        console.log(userStreams)
+    }, [userStreams])
+
+    useEffect(()=>{
         if(!socket) return;
         socket.on(SocketCallEvents.MATCH_CANCEL, onMemberLeave);
         return(()=>{
@@ -52,11 +57,17 @@ export default function CallPage(){
             <HeaderContentWrapper className="flex flex-col min-h-full w-full" outerClassName="h-[100svh]">
                 <div className="grid grid-cols-2 grid-rows-2 flex-1">
                     <div className="bg-c_gray-500">
-                        <video className="h-full object-cover" ref = {myVideoRef} />
+                        <video className="h-full object-cover" ref = {myVideoRef}/>
                     </div>
+                    {
+                        userStreams.map((stream, i)=>{
+                            
+                            return <video className="h-full object-cover" key = {i} ref={(el)=>{if(el)el.srcObject=stream; el?.play()}} />
+                        })
+                    }
+                    {/* <div className="bg-c_gray-500" />
                     <div className="bg-c_gray-500" />
-                    <div className="bg-c_gray-500" />
-                    <div className="bg-c_gray-500" />
+                    <div className="bg-c_gray-500" /> */}
                 </div>
                 <div className="p-sm">
                     <CustomButton colorVariant="secondary" className="w-full" onClick={cancel}>End Call</CustomButton>

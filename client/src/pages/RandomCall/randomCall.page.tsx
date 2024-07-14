@@ -17,29 +17,14 @@ import BottomNav from "@/components/Nav/BottomNav.component";
 import { Socket } from "socket.io-client";
 import { RandomCallActions, TCallUser } from "@/redux/featuers/randomCall.slice";
 import CallPage from "../Call/Call.page";
+import useWebRtc from "@/hooks/rtc.hook";
 const GROUP_TEXT = "Group mode allows you to find random matches of 3 people. You will then be able to video call with these users.";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find random match of a singe user. You will then be able to video call with the user.";
 export default function RandomCallPage(){
+    const {findCallMatch} = useWebRtc();
     const {status, type} = useSelector((state: RootState)=>state.randomCall);
     const dispatch = useDispatch<AppDispatch>();
-    const socket = useSocket() as Socket<CallMatchEvents.TServerToClients, CallMatchEvents.TClientToServer>;
-    const onFind = () => {
-        if(!socket) return;
-        dispatch(RandomCallActions.findMatch());
-        socket.emit(SocketCallEvents.MATCH_FIND, {type});
-    }
-    const handleFound = (data: {users: TCallUser[], room_id: string}) => {
-        console.log(data)
-        dispatch(RandomCallActions.setMatch(data));
-    }
 
-    useEffect(()=>{
-        if(!socket) return;
-        socket.on(SocketCallEvents.MATCH_FOUND, handleFound)
-        return(()=>{
-            socket.off(SocketCallEvents.MATCH_FOUND, handleFound)
-        })
-    }, [socket])
     if(status === "finding"){
         return(
             <FindingMatchPage />
@@ -70,7 +55,7 @@ export default function RandomCallPage(){
                     <p className="text-c_gray-700 text-sm font-medium">
                         {type === "group"?GROUP_TEXT:INDIVIDUAL_TEXT}
                     </p>
-                    <CustomButton colorVariant="secondary" className="w-full" onClick={onFind}>Start Calling</CustomButton>
+                    <CustomButton colorVariant="secondary" className="w-full" onClick={findCallMatch}>Start Calling</CustomButton>
                 </div>
             </HeaderContentWrapper>
             <BottomNav />
