@@ -4,16 +4,18 @@ import Header, { HeaderHeading } from "@/components/Header/Header.component";
 import { useSocket } from "@/Contexts/socket.context";
 import useWebRtc from "@/hooks/rtc.hook";
 import { RandomCallActions } from "@/redux/featuers/randomCall.slice";
+import { RootState } from "@/redux/store.redux";
 import { toastError } from "@/utils/toast.utils";
+
 import { CallMatchEvents, SocketCallEvents } from "@shared/sockets/socketEvents.type";
 import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
 
 export default function CallPage(){
-    const { myStream, userStreams } = useWebRtc();
-
+    const { myStream, leaveCall } = useWebRtc();
+    const {userStreams} =useSelector((state: RootState)=>state.randomCall);
     const myVideoRef = useRef<HTMLVideoElement>(null);
     const socket = useSocket() as Socket<CallMatchEvents.TServerToClients, CallMatchEvents.TClientToServer> | null;
     const dispatch = useDispatch();
@@ -25,11 +27,6 @@ export default function CallPage(){
         myVideoRef.current.play();
     } ,[myVideoRef, myStream])
 
-    const cancel = () => {
-        if(!socket) return;
-        socket.emit(SocketCallEvents.MATCH_CANCEL);
-        dispatch(RandomCallActions.cancelMatch());
-    }
 
     const onMemberLeave = ({user_id, username}: {user_id: string, username: string}) => {
         toastError(`${username} disconnected`);
@@ -70,7 +67,7 @@ export default function CallPage(){
                     <div className="bg-c_gray-500" /> */}
                 </div>
                 <div className="p-sm">
-                    <CustomButton colorVariant="secondary" className="w-full" onClick={cancel}>End Call</CustomButton>
+                    <CustomButton colorVariant="secondary" className="w-full" onClick={leaveCall}>End Call</CustomButton>
                 </div>
             </HeaderContentWrapper>
         </>
