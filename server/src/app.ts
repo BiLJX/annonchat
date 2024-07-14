@@ -29,7 +29,7 @@ cloudinary.config({
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: true,  }));
-app.use(express.static(path.join("dist")))
+app.use(express.static(path.join("dist")));
 
 app.use("/api", ApiRoutes);
 

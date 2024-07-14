@@ -71,13 +71,14 @@ export default function useWebRtc() {
     useEffect(() => {
         if (!socket) return;
         if (!myStream) return;
+        if(!peer) return;
         socket.on(SocketCallEvents.MATCH_FOUND, handleFound);
         peer.on("call", handleCall);
         return () => {
             socket.off(SocketCallEvents.MATCH_FOUND, handleFound);
             peer.off("call", handleCall);
         };
-    }, [socket, myStream]);
+    }, [socket, myStream, peer]);
 
     useEffect(() => {
         try {

@@ -6,7 +6,7 @@ import { Socket } from "socket.io-client";
 
 
 let temp: any = null;
-export const PeerContext = createContext<Peer>(temp);
+export const PeerContext = createContext<Peer|null|undefined>(temp);
 
 export default function PeerContextProvider({ children }: { children: React.ReactNode }) {
     const [peer, setPeer] = useState<Peer>();
@@ -23,7 +23,10 @@ export default function PeerContextProvider({ children }: { children: React.Reac
             peer?.disconnect();
         })
     }, [socket])
-    if (!peer) return;
+    // if (!peer) {
+    //     console.log("Hey");
+    //     return;
+    // };
     return (
         <PeerContext.Provider value={peer} >
             {children}

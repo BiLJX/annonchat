@@ -33,6 +33,7 @@ function App() {
     }, [dispatch])
     if(failed) return <>Error while connecting to server</>
     if(isLoading) return <>Loading...</>
+
     return (
         <SocketContextProvider>
             <PeerContextProvider>
@@ -41,7 +42,6 @@ function App() {
                         <Route path="/" element={<RandomCallPage />} />
                         <Route path="/chat" element={<RandomChatPage />} />
                         <Route path = "/call" element = {<CallPage />} />
-                        {/* <Route path = "/chat/individual" element={<ChatPage />} /> */}
                     </Route>
                     <Route path = "/signup" element = {<SignupPage />} />
                     <Route path = "/login" element = {<LoginPage />} />
