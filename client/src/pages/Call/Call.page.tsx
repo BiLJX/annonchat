@@ -11,11 +11,12 @@ import { CallMatchEvents, SocketCallEvents } from "@shared/sockets/socketEvents.
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
+import { cn } from "@/utils/cn.utils";
 
 
 export default function CallPage(){
     const { myStream, leaveCall } = useWebRtc();
-    const {userStreams} =useSelector((state: RootState)=>state.randomCall);
+    const {userStreams, type} =useSelector((state: RootState)=>state.randomCall);
     const myVideoRef = useRef<HTMLVideoElement>(null);
     const socket = useSocket() as Socket<CallMatchEvents.TServerToClients, CallMatchEvents.TClientToServer> | null;
     const dispatch = useDispatch();
@@ -52,7 +53,10 @@ export default function CallPage(){
                 </div>
             </Header>
             <HeaderContentWrapper className="flex flex-col h-full w-full" outerClassName="h-[100svh]">
-                <div className="grid grid-cols-2 grid-rows-2 h-[100%]">
+                <div className={cn("grid grid-cols-2 grid-rows-2 h-[100%]", {"grid-cols-1":type === "individual"})}>
+                <div className="bg-c_gray-500">
+                    <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef}/>
+                </div>
                     {
                         userStreams.map((stream, i)=>{
                             return (

@@ -92,7 +92,8 @@ export default function useWebRtc() {
                     setMyStream(stream);
                 },
                 (error: any) => {
-                    console.error("Error getting user media", error);
+                    console.log(error);
+                    dispatch(RandomCallActions.handleError());
                 }
             );
         } catch (error) {

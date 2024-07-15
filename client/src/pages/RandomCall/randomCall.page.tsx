@@ -11,13 +11,16 @@ import FindingMatchPage from "../Finding/finding.page";
 import BottomNav from "@/components/Nav/BottomNav.component";
 import CallPage from "../Call/Call.page";
 import useWebRtc from "@/hooks/rtc.hook";
+import WebCamErrorPage from "./webCamErr.page";
 const GROUP_TEXT = "Group mode allows you to find random matches of 3 people. You will then be able to video call with these users.";
 const INDIVIDUAL_TEXT = "Individual mode allows you to find random match of a singe user. You will then be able to video call with the user.";
 export default function RandomCallPage(){
     const {findCallMatch} = useWebRtc();
     const {status, type} = useSelector((state: RootState)=>state.randomCall);
     const dispatch = useDispatch<AppDispatch>();
-
+    if(status === "error"){
+        return <WebCamErrorPage />
+    }
     if(status === "finding"){
         return(
             <FindingMatchPage />

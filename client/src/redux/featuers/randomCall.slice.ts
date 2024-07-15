@@ -9,7 +9,7 @@ export interface TCallUser extends TUser {
 
 interface MainState {
     type: RandomCallTypes,
-    status: "idle"|"finding"|"found",
+    status: "idle"|"finding"|"found"|"error",
     match: TCallUser[],
     connections: MediaConnection[],
     userStreams: MediaStream[],
@@ -32,12 +32,17 @@ const randomCallSlice = createSlice({
     initialState,
     reducers: {
         changeType: (state, action: PayloadAction<RandomCallTypes>) => {
+            if(state.status === "error") return; 
             state.type = action.payload;
             state.match = [];
             state.userStreams = [];
             state.connections = [];
         },
+        handleError: (state) => {
+            state.status = "error";
+        },
         findMatch: (state) => {
+            if(state.status === "error") return; 
             if(state.status === "idle") {
                 state.userStreams = [];
                 state.connections = [];
@@ -46,6 +51,7 @@ const randomCallSlice = createSlice({
             }
         },
         cancelMatch: (state) => {
+            if(state.status === "error") return; 
             if(state.status === "found") {
                 state.userStreams = [];
                 state.connections = [];
@@ -54,6 +60,7 @@ const randomCallSlice = createSlice({
             }
         },
         removeMember: (state, action: PayloadAction<string>) => {
+            if(state.status === "error") return; 
             if(state.status === "found") {
                 state.match = state.match.filter(x=>x.user_id !== action.payload);
                 if(state.match.length <= 1){
@@ -63,18 +70,22 @@ const randomCallSlice = createSlice({
             }
         },
         setMatch: (state, action: PayloadAction<{users: TCallUser[], room_id: string}>) => {
+            if(state.status === "error") return; 
             state.match = [];
             state.status = "found";
             state.match = action.payload.users
             state.room_id = action.payload.room_id
         },
         addStream: (state, action: PayloadAction<MediaStream>) => {
+            if(state.status === "error") return; 
             state.userStreams.push(action.payload);
         },
         addConnection: (state, action: PayloadAction<MediaConnection>) => {
+            if(state.status === "error") return; 
             state.connections.push(action.payload);
         },
         cancelFind: (state) => {
+            if(state.status === "error") return; 
             if(state.status === "finding"){
                 state.userStreams = [];
                 state.connections = [];
@@ -87,5 +98,5 @@ const randomCallSlice = createSlice({
 
 export default randomCallSlice.reducer;
 export namespace RandomCallActions {
-    export const {cancelMatch, changeType, findMatch, setMatch, cancelFind, removeMember, addStream, addConnection} = randomCallSlice.actions;
+    export const {cancelMatch, changeType, findMatch, setMatch, cancelFind, removeMember, addStream, addConnection, handleError} = randomCallSlice.actions;
 }
