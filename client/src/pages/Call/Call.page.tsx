@@ -6,7 +6,7 @@ import useWebRtc from "@/hooks/rtc.hook";
 import { RandomCallActions } from "@/redux/featuers/randomCall.slice";
 import { RootState } from "@/redux/store.redux";
 import { toastError } from "@/utils/toast.utils";
-
+import Video from "./5377684-uhd_2560_1440_25fps.mp4"
 import { CallMatchEvents, SocketCallEvents } from "@shared/sockets/socketEvents.type";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,27 +46,22 @@ export default function CallPage(){
     }, [socket])
     return(
         <>
-            <Header>
+            <Header backButton onBack={leaveCall}>
                 <div className="flex-1">
-                    <HeaderHeading className="text-center">Call</HeaderHeading>
+                    <HeaderHeading>Call</HeaderHeading>
                 </div>
             </Header>
-            <HeaderContentWrapper className="flex flex-col min-h-full w-full" outerClassName="h-[100svh]">
-                <div className="grid grid-cols-2 grid-rows-2 flex-1">
-                    <div className="bg-c_gray-500">
-                        <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef}/>
-                    </div>
+            <HeaderContentWrapper className="flex flex-col h-full w-full" outerClassName="h-[100svh]">
+                <div className="grid grid-cols-2 grid-rows-2 h-[100%]">
                     {
                         userStreams.map((stream, i)=>{
-                            return <video playsInline controls={false} className="h-full object-cover" key = {i} ref={(el)=>{if(el)el.srcObject=stream; el?.play()}} />
+                            return (
+                                <div className="overflow-hidden">
+                                    <video playsInline controls={false} className="h-full object-cover" key = {i} ref={(el)=>{if(el)el.srcObject=stream; el?.play()}} />
+                                </div>
+                            )
                         })
                     }
-                    {/* <div className="bg-c_gray-500" />
-                    <div className="bg-c_gray-500" />
-                    <div className="bg-c_gray-500" /> */}
-                </div>
-                <div className="p-sm">
-                    <CustomButton colorVariant="secondary" className="w-full" onClick={leaveCall}>End Call</CustomButton>
                 </div>
             </HeaderContentWrapper>
         </>
