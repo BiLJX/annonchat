@@ -6,12 +6,10 @@ import { SocketCallEvents } from "@shared/sockets/socketEvents.type";
 import { MediaConnection } from "peerjs";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useAuth from "./auth.hook";
 import { toastError } from "@/utils/toast.utils";
 
 export default function useWebRtc() {
-    const { type, connections } = useSelector((state: RootState) => state.randomCall);
-    const { currentUser } = useAuth();
+    const { type, match } = useSelector((state: RootState) => state.randomCall);
     const [myStream, setMyStream] = useState<MediaStream>();
     const peer = usePeer();
     const dispatch = useDispatch<AppDispatch>();
@@ -26,8 +24,9 @@ export default function useWebRtc() {
     const leaveCall = () => {
         if(!socket) return;
         socket.emit(SocketCallEvents.MATCH_CANCEL);
+        const connections = match.map(x=>x.connection);
         connections.forEach(call=>{
-            call.close();
+            if(call) call.close();
         })
         dispatch(RandomCallActions.cancelMatch());
     }
@@ -37,12 +36,13 @@ export default function useWebRtc() {
         if (!peer) return;
         if (!data.users) return;
         if (!myStream) return;
-        const peer_ids = data.users.map(x => (x.user_id !== currentUser?.user_id ? x.peer_id : null)).filter(Boolean);
-        peer_ids.forEach(id => {
+        //const peer_ids = data.users.map(x => (x.user_id !== currentUser?.user_id ? x.peer_id : null)).filter(Boolean);
+        data.users.forEach(user => {
+            const id = user.peer_id;
             if (id) {
                 const call = peer.call(id, myStream);
                 call.on("stream", stream => {
-                    dispatch(RandomCallActions.addStream(stream));
+                    dispatch(RandomCallActions.addStream({stream, user_id: user.user_id}));
                 });
                 call.on("error", (error) => {
                     toastError("Unknown Error Occured");
@@ -55,7 +55,9 @@ export default function useWebRtc() {
 
     const handleCall = (call: MediaConnection) => {
         console.log("Incoming call", call);
-        dispatch(RandomCallActions.addConnection(call));
+        const user = match.find(user=>user.peer_id===call.peer);
+        if(!user) return;
+        dispatch(RandomCallActions.addConnection({connection: call, user_id: user.user_id}));
         call.answer(myStream);
         // call.on("stream", stream => {
            
@@ -88,7 +90,6 @@ export default function useWebRtc() {
             navigator.getUserMedia(
                 { video: true, audio: true },
                 (stream: MediaStream) => {
-                    console.log("My stream", stream);
                     setMyStream(stream);
                 },
                 (error: any) => {
