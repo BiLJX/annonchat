@@ -86,7 +86,7 @@ export default function useWebRtc() {
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
             if (!navigator.getUserMedia) return;
             navigator.getUserMedia(
-                { video: true, audio: false },
+                { video: true, audio: true },
                 (stream: MediaStream) => {
                     console.log("My stream", stream);
                     setMyStream(stream);

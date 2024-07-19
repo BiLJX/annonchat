@@ -11,7 +11,6 @@ import RandomChatPage from "@/pages/RandomChat/randomChat.page"
 import RandomCallPage from "@/pages/RandomCall/randomCall.page"
 import { toastError } from "@/utils/toast.utils"
 import SocketContextProvider from "@/Contexts/socket.context"
-import CallPage from "@/pages/Call/Call.page"
 import PeerContextProvider from "@/Contexts/peer.context"
 
 function App() {
@@ -41,7 +40,7 @@ function App() {
                     <Route element = {<ProtectedRouter />}>
                         <Route path="/" element={<RandomCallPage />} />
                         <Route path="/chat" element={<RandomChatPage />} />
-                        <Route path = "/call" element = {<CallPage />} />
+                        {/* <Route path = "/call" element = {<CallPage />} /> */}
                     </Route>
                     <Route path = "/signup" element = {<SignupPage />} />
                     <Route path = "/login" element = {<LoginPage />} />

@@ -1,4 +1,3 @@
-import CustomButton from "@/components/Buttons/Button.component";
 import { HeaderContentWrapper } from "@/components/Container/Container.component";
 import Header, { HeaderHeading } from "@/components/Header/Header.component";
 import { useSocket } from "@/Contexts/socket.context";
@@ -6,7 +5,6 @@ import useWebRtc from "@/hooks/rtc.hook";
 import { RandomCallActions } from "@/redux/featuers/randomCall.slice";
 import { RootState } from "@/redux/store.redux";
 import { toastError } from "@/utils/toast.utils";
-import Video from "./5377684-uhd_2560_1440_25fps.mp4"
 import { CallMatchEvents, SocketCallEvents } from "@shared/sockets/socketEvents.type";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,6 +41,7 @@ export default function CallPage(){
         socket.on(SocketCallEvents.MATCH_CANCEL, onMemberLeave);
         return(()=>{
             socket.off(SocketCallEvents.MATCH_CANCEL, onMemberLeave);
+            leaveCall();
         })
     }, [socket])
     return(
@@ -55,7 +54,7 @@ export default function CallPage(){
             <HeaderContentWrapper className="flex flex-col h-full w-full" outerClassName="h-[100svh]">
                 <div className={cn("grid grid-cols-2 grid-rows-2 h-[100%]", {"grid-cols-1":type === "individual"})}>
                 <div className="bg-c_gray-500">
-                    <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef}/>
+                    <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef} muted/>
                 </div>
                     {
                         userStreams.map((stream, i)=>{
