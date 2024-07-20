@@ -51,15 +51,15 @@ export default function CallPage(){
             </Header>
             <HeaderContentWrapper className="flex flex-col h-full w-full" outerClassName="h-[100svh]">
                 <div className={cn("grid grid-cols-2 grid-rows-2 h-[100%]", {"grid-cols-1":type === "individual"})}>
-                <div className="bg-c_gray-500">
-                    <video playsInline controls={false} className="h-full object-cover" ref = {myVideoRef} muted/>
+                <div className="bg-c_gray-500 overflow-hidden">
+                    <video playsInline controls={false} className="h-full object-cover w-full" ref = {myVideoRef} muted/>
                 </div>
                     {
                         match.map((user, i)=>{
                             if(user.user_id === currentUser?.user_id) return <></>
                             return (
                                 <div className="overflow-hidden">
-                                    <video playsInline controls={false} className="h-full object-cover" key = {i} ref={(el)=>{if(el && user.stream)el.srcObject=user.stream; el?.play()}} />
+                                    <video playsInline controls={false} className="h-full object-cover w-full" key = {i} ref={(el)=>{if(el && user.stream)el.srcObject=user.stream; el?.play()}} />
                                 </div>
                             )
                         })
