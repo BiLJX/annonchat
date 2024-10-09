@@ -59,6 +59,9 @@ export default function useWebRtc() {
         if(!user) return;
         dispatch(RandomCallActions.addConnection({connection: call, user_id: user.user_id}));
         call.answer(myStream);
+        call.on("stream", stream => {
+            dispatch(RandomCallActions.addStream({stream, user_id: user.user_id}));
+        });
         // call.on("stream", stream => {
            
         // });
@@ -82,6 +85,7 @@ export default function useWebRtc() {
         };
     }, [socket, myStream, peer]);
 
+    //Setting my stream
     useEffect(() => {
         try {
             const navigator = window.navigator as any;

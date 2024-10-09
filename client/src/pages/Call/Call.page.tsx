@@ -50,7 +50,7 @@ export default function CallPage(){
                 </div>
             </Header>
             <HeaderContentWrapper className="flex flex-col h-full w-full" outerClassName="h-[100svh]">
-                <div className={cn("grid grid-cols-2 grid-rows-2 h-[100%]", {"grid-cols-1":type === "individual"})}>
+                <div className={cn("grid grid-cols-2 grid-rows-2 h-[100%]", {"grid-cols-1":(type === "individual"||match.length < 3)})}>
                 <div className="bg-c_gray-500 overflow-hidden">
                     <video playsInline controls={false} className="h-full object-cover w-full" ref = {myVideoRef} muted/>
                 </div>
